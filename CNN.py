@@ -46,8 +46,11 @@ class CNN(nn.Module):
 
 
 cnn = CNN()
+# 参数更新
 optimizer = torch.optim.Adam(cnn.parameters(), lr=LR)
+# 交叉熵计算损失
 loss_function = nn.CrossEntropyLoss()
+# 训练过程
 for epoch in range(EPOCH):
     for step, (x, y) in enumerate(train_loader):
         b_x = Variable(x)
@@ -58,7 +61,7 @@ for epoch in range(EPOCH):
         optimizer.zero_grad()  # 清空上一次的梯度
 
         loss.backward()  # 误差反向传播
-        optimizer.step()
+        optimizer.step() # 进行更新
 
         if step % 100 == 0:
             test_output = cnn(test_x)
@@ -67,6 +70,7 @@ for epoch in range(EPOCH):
             print('Epoch:', epoch, '|Step:', step,
                   '|train loss:%.4f' % loss.data.item(),
                   '|test accuracy:%.4f' % accuracy)
+                  
 test_output = cnn(test_x[:20])
 pred_y = torch.max(test_output, 1)[1].data.numpy().squeeze()
 print(pred_y[:20], 'prediction number')
