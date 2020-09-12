@@ -7,6 +7,7 @@ class Model(nn.Module):
         self.lstm_size = 128
         self.embedding_dim = 128
         self.num_layers = 3
+        
         n_vocab = len(dataset.uniq_words) # number of vocabulary
         self.embedding = nn.Embedding(num_embeddings=n_vocab, embedding_dim=self.embedding_dim)
         self.lstm = nn.LSTM(

@@ -13,9 +13,6 @@ parser.add_argument('--batch-size', type=int, default=256)
 parser.add_argument('--sequence-length', type=int, default=4)
 args = parser.parse_args()
 
-dataset = Dataset(args)
-model = Model(args)
-
 # 训练函数
 def train(dataset, model, args):
     model.train()  # ???
@@ -26,18 +23,21 @@ def train(dataset, model, args):
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     for epoch in range(args.max_epochs):
-        optimizer.zero_grad()
-        # 前向推导 计算损失
-        y_pred, (state_h, state_c) = model(x, (state_h, state_c))
-        loss = criterion(y_pred.transpose(1, 2), y)  # ???
+        state_h, state_c = model.init_state(args.sequence_length)
 
-        state_h = state_h.detach()  # ???
-        state_c = state_c.detach()  
-        # 误差反向传播
-        loss.backward()
-        optimizer.step()
+        for batch, (x, y) in enumerate(dataloader):
+            optimizer.zero_grad()
+            # 前向推导 计算损失
+            y_pred, (state_h, state_c) = model(x, (state_h, state_c))
+            loss = criterion(y_pred.transpose(1, 2), y)  # ???
 
-        print({'epoch': epoch, 'batch': batch, 'loss': loss.item()})
+            state_h = state_h.detach()  # ???
+            state_c = state_c.detach()  
+            # 误差反向传播
+            loss.backward()
+            optimizer.step()
+
+            print({'epoch': epoch, 'batch': batch, 'loss': loss.item()})
 
 def predict(dataset, model, text, next_words = 100):
     model.eval()  # ???
@@ -56,5 +56,8 @@ def predict(dataset, model, text, next_words = 100):
 
     return words
 
+
+dataset = Dataset(args)
+model = Model(dataset)
 train(dataset, model, args)
 print(predict(dataset, model, text='Knock knock. Whos there?'))

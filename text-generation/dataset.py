@@ -7,8 +7,10 @@ class Dataset(torch.utils.data.Dataset):
         self.args = args
         self.words = self.load_words()
         self.uniq_words = self.get_uniq_words()
+
         self.index_to_word = {index:word for index, word in enumerate(self.uniq_words)}
         self.word_to_index = {word:index for index, word in enumerate(self.uniq_words)}
+        
         self.words_indexes = [self.word_to_index[w] for w in self.words]
 
     def load_words(self):
